@@ -34,6 +34,8 @@ public class Main {
 		System.out.println("Tamanho da mascara: " + tamanhoMascara);
 		System.out.println("Numero de threads: " + nroThreads);
 
+		Filtro[] filtro = new Filtro[nroThreads];
+
 		try {
 
 			img = ImageIO.read(new File("../images/" + kNOME_ARQUIVO_ENTRADA));
@@ -43,7 +45,27 @@ public class Main {
 			System.out.println("Erro ao ler arquivo de entrada");
 		}
 
+		System.out.println("Largura da imagem lida: " + img.getWidth());
+
+		System.out.println("Altura da imagem lida: " + img.getHeight() + "\n");
+
 		imgCopy = img;
+
+		for(int i=0 ; i<nroThreads ; i++) {
+
+			filtro[i] = new Filtro(i, nroThreads);
+			filtro[i].start();
+		}
+
+		for(int i=0 ; i<nroThreads ; i++) {
+
+			try {
+				filtro[i].join();
+			}	
+			catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	
 		try {
 
@@ -52,10 +74,6 @@ public class Main {
 		} catch (IOException e) {
 
 			System.out.println("Erro ao escrever arquivo de saida");
-		}
-
-    	System.out.println("Largura da imagem lida: " + img.getWidth());
-
-		System.out.println("Altura da imagem lida: " + img.getHeight());		
+		}    			
 	}	
 }
