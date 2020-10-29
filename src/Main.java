@@ -1,4 +1,4 @@
-package test;
+//package test;
 
 
 
@@ -12,11 +12,11 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		File file = new File("./out.bmp");
+		File file = new File("../images/out.bmp");
 		
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new File("borboleta.bmp"));
+			img = ImageIO.read(new File("../images/borboleta.bmp"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
