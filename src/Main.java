@@ -1,46 +1,61 @@
-//package test;
-
-
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 
 public class Main {
 
+	private static final int kQUANT_PARAMETROS = 2;
+
+	private static final String kNOME_ARQUIVO_ENTRADA = "borboleta.bmp";
+
+	private static final String kNOME_ARQUIVO_SAIDA = "out.bmp";
+
 	public static void main(String[] args) {
 		
-		File file = new File("../images/out.bmp");
+		int tamanhoMascara, nroThreads, deslPosMascara;
+
+		File file = new File("../images/" + kNOME_ARQUIVO_SAIDA);
 		
-		BufferedImage img = null;
-		try {
-			img = ImageIO.read(new File("../images/borboleta.bmp"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// you should stop here
-		byte[][] green = new byte[30][40];
-		for(int x=0; x<30; x++){
-		  for(int y=0; y<40; y++){
-		     int color = img.getRGB(x,y);
-		     //alpha[x][y] = (byte)(color>>24);
-		     //red[x][y] = (byte)(color>>16);
-		     green[x][y] = (byte)(color>>8);
-		     //blue[x][y] = (byte)(color);
-		  }
-		}
-		
-		try {
-			ImageIO.write(img, "BMP", file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		BufferedImage img = null, imgCopy = null;
+
+		if(args.length != kQUANT_PARAMETROS ){
+
+			System.out.printf("java Main <tamanho_mascara> <nro_threads>\n");
+
+			return;
 		}
 
-	}
+		tamanhoMascara = Integer.parseInt(args[0]);
+		nroThreads = Integer.parseInt(args[1]);
+
+		deslPosMascara = (tamanhoMascara/2);
+
+		System.out.println("Tamanho da mascara: " + tamanhoMascara);
+		System.out.println("Numero de threads: " + nroThreads);
+
+		try {
+
+			img = ImageIO.read(new File("../images/" + kNOME_ARQUIVO_ENTRADA));
+
+		} catch (IOException e) {
+
+			System.out.println("Erro ao ler arquivo de entrada");
+		}
+
+		imgCopy = img;
 	
-	
+		try {
+
+			ImageIO.write(imgCopy, "BMP", file);
+
+		} catch (IOException e) {
+
+			System.out.println("Erro ao escrever arquivo de saida");
+		}
+
+    	System.out.println("Largura da imagem lida: " + img.getWidth());
+
+		System.out.println("Altura da imagem lida: " + img.getHeight());		
+	}	
 }
