@@ -53,7 +53,7 @@ public class Main {
 
 		for(int i=0 ; i<nroThreads ; i++) {
 
-			filtro[i] = new Filtro(i, nroThreads);
+			filtro[i] = new Filtro(i, nroThreads, tamanhoMascara, deslPosMascara, img.getWidth(), img.getHeight(), img, imgCopy);
 			filtro[i].start();
 		}
 
