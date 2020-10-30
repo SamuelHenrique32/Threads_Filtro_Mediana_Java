@@ -20,6 +20,16 @@ public class Filtro extends Thread {
         this.imgCopy = imgCopy;
     }
 
+    private void debug_delay() {
+
+        try { 
+            Thread.sleep(1000);
+        } 
+        catch (InterruptedException ex) {
+
+        }
+    }
+
     private void bubble_sort(int v[], int size) {
 
         int k, j, aux;
@@ -88,6 +98,9 @@ public class Filtro extends Thread {
         // Posicao corrente de deslocamento em Y para mascara
         i = startY;
 
+        //System.out.printf("Thread id: %d", this.tid);
+        //System.out.printf(" posX = %d posY = %d\n\n", posX, posY);
+
         // Para cada pixel da imagem
         while((posX<this.larguraImagem) && (posY<this.alturaImagem)) {
 
@@ -100,7 +113,7 @@ public class Filtro extends Thread {
                 // Processamento para pixel atual
                 while(true) {
 
-                    currentColor = img.getRGB(posX, posY);
+                    currentColor = img.getRGB(j, i);
 
                     vetmascaraRedInt[posVetMascaraRed] = (byte)(currentColor>>16);
                     vetmascaraGreenInt[posVetMascaraGreen] = (byte)(currentColor>>8);
@@ -125,11 +138,10 @@ public class Filtro extends Thread {
                         j = startX;
                     }
 
-                    
                     // Proximo pixel
                     if(posVetMascaraRed >= (tamanhoMascara*tamanhoMascara)) {
 
-                        //System.out.println("\nMascara Red antes ordenacao:\n");                    
+                        //System.out.print("\nMascara Red antes ordenacao:");                    
 
                         for(int x=0 ; x<tamanhoMascara*tamanhoMascara ; x++) {
                             mascaraVet[x] = vetmascaraRedInt[x];
@@ -137,6 +149,12 @@ public class Filtro extends Thread {
                         }
 
                         bubble_sort(mascaraVet, tamanhoMascara*tamanhoMascara);
+
+                        //System.out.print("\nMascara Red apos ordenacao:");                    
+
+                        /*for(int x=0 ; x<tamanhoMascara*tamanhoMascara ; x++) {
+                            System.out.printf("%d ", mascaraVet[x]);
+                        }*/
 
                         medianRed = median(mascaraVet, tamanhoMascara);
 
@@ -163,11 +181,8 @@ public class Filtro extends Thread {
                         colortest += medianGreen<<8;
                         colortest += medianBlue;
 
-                        //System.out.println(medianRed);
-                        
                         //colorToStore = new Color((int)medianRed, (int)medianGreen, (int)medianBlue);
                         
-
                         //colorValueToStore = colorToStore.getRGB();
 
                         this.imgCopy.setRGB(posX, posY, colortest);
