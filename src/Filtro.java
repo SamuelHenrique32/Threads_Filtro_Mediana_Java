@@ -1,5 +1,7 @@
 import java.awt.image.BufferedImage;
 import java.awt.Color;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 
 public class Filtro extends Thread {
 
@@ -78,9 +80,8 @@ public class Filtro extends Thread {
         int mascaraVet[] = new int[this.tamanhoMascara*this.tamanhoMascara];
         int currentColor = 0, colorValueToStore = 0;
 
-        byte currentByteRed, currentByteGreen, currentByteBlue;
-
-        Color colorToStore;
+        Raster raster = img.getRaster();
+        WritableRaster wraster = imgCopy.getRaster();
 
         // Posicao atual na matriz
         posX = deslPosMascara;
@@ -101,6 +102,16 @@ public class Filtro extends Thread {
         //System.out.printf("Thread id: %d", this.tid);
         //System.out.printf(" posX = %d posY = %d\n\n", posX, posY);
 
+        /*for(int y=0 ; y<this.larguraImagem ; y++) {
+            for(int z=0 ; z<this.alturaImagem ; z++) {
+                System.out.printf("%d|%d|%d\t\t\t\t", raster.getSample(y,z,0), raster.getSample(y,z,1), raster.getSample(y,z,2));
+            }
+            System.out.printf("\n");
+        }
+
+
+        System.out.printf("\n\n");*/
+
         // Para cada pixel da imagem
         while((posX<this.larguraImagem) && (posY<this.alturaImagem)) {
 
@@ -113,11 +124,13 @@ public class Filtro extends Thread {
                 // Processamento para pixel atual
                 while(true) {
 
-                    currentColor = img.getRGB(j, i);
+                    //System.out.printf("%d %d ", j, i);
+                    
+                    vetmascaraRedInt[posVetMascaraRed] = raster.getSample(j,i,0);
+                    //System.out.printf("vetmascaraRedInt[%d] = %d\n", posVetMascaraRed, vetmascaraRedInt[posVetMascaraRed]);
+                    vetmascaraGreenInt[posVetMascaraGreen] = raster.getSample(j,i,1);
+                    vetmascaraBlueInt[posVetMascaraBlue] = raster.getSample(j,i,2);
 
-                    vetmascaraRedInt[posVetMascaraRed] = (byte)(currentColor>>16);
-                    vetmascaraGreenInt[posVetMascaraGreen] = (byte)(currentColor>>8);
-                    vetmascaraBlueInt[posVetMascaraBlue] = (byte)(currentColor);
     
                     medianRed = 0;
                     medianGreen = 0;
@@ -141,16 +154,17 @@ public class Filtro extends Thread {
                     // Proximo pixel
                     if(posVetMascaraRed >= (tamanhoMascara*tamanhoMascara)) {
 
-                        //System.out.print("\nMascara Red antes ordenacao:");                    
+                        //System.out.print("Mascara Red antes ordenacao:");                    
 
                         for(int x=0 ; x<tamanhoMascara*tamanhoMascara ; x++) {
                             mascaraVet[x] = vetmascaraRedInt[x];
                             //System.out.printf("%d ", mascaraVet[x]);
                         }
+                        //System.out.println();
 
                         bubble_sort(mascaraVet, tamanhoMascara*tamanhoMascara);
 
-                        //System.out.print("\nMascara Red apos ordenacao:");                    
+                        //System.out.print("Mascara Red apos ordenacao:");                    
 
                         /*for(int x=0 ; x<tamanhoMascara*tamanhoMascara ; x++) {
                             System.out.printf("%d ", mascaraVet[x]);
@@ -175,17 +189,11 @@ public class Filtro extends Thread {
                         bubble_sort(mascaraVet, tamanhoMascara*tamanhoMascara);
 
                         medianBlue = median(mascaraVet, tamanhoMascara);
-
-                        int colortest = 0;
-                        colortest += medianRed<<16;
-                        colortest += medianGreen<<8;
-                        colortest += medianBlue;
-
-                        //colorToStore = new Color((int)medianRed, (int)medianGreen, (int)medianBlue);
                         
-                        //colorValueToStore = colorToStore.getRGB();
-
-                        this.imgCopy.setRGB(posX, posY, colortest);
+                        //System.out.printf("Median Red: %d\n\n", medianRed);
+                        wraster.setSample(posX, posY, 0, medianRed);
+                        wraster.setSample(posX, posY, 1, medianGreen);
+                        wraster.setSample(posX, posY, 2, medianBlue);
 
                         posVetMascaraRed = 0;
                         posVetMascaraGreen = 0;
