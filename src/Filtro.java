@@ -9,6 +9,8 @@ public class Filtro extends Thread {
     private int larguraImagem, alturaImagem;
 
     BufferedImage img = null, imgCopy = null;
+    Raster raster;
+    WritableRaster wraster;
 
     public Filtro(int tid, int nthreads, int tamanhoMascara, int deslPosMascara, int larguraImagem, int alturaImagem, BufferedImage img, BufferedImage imgCopy) {
 
@@ -20,6 +22,8 @@ public class Filtro extends Thread {
         this.alturaImagem = alturaImagem;
         this.img = img;
         this.imgCopy = imgCopy;
+        this.raster = img.getRaster();
+        this.wraster = imgCopy.getRaster();
     }
 
     private void debug_delay() {
@@ -80,9 +84,6 @@ public class Filtro extends Thread {
         int mascaraVet[] = new int[this.tamanhoMascara*this.tamanhoMascara];
         int currentColor = 0, colorValueToStore = 0;
 
-        Raster raster = img.getRaster();
-        WritableRaster wraster = imgCopy.getRaster();
-
         // Posicao atual na matriz
         posX = deslPosMascara;
         posY = deslPosMascara+this.tid;
@@ -108,7 +109,6 @@ public class Filtro extends Thread {
             }
             System.out.printf("\n");
         }
-
 
         System.out.printf("\n\n");*/
 
