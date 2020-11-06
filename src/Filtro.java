@@ -1,18 +1,11 @@
-import java.awt.image.BufferedImage;
-import java.awt.Color;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-
 public class Filtro extends Thread {
 
     private int tid, nthreads, tamanhoMascara, deslPosMascara;
     private int larguraImagem, alturaImagem;
 
-    BufferedImage img = null, imgCopy = null;
-    Raster raster;
-    WritableRaster wraster;
+    private Tools tools;
 
-    public Filtro(int tid, int nthreads, int tamanhoMascara, int deslPosMascara, int larguraImagem, int alturaImagem, BufferedImage img, BufferedImage imgCopy) {
+    public Filtro(int tid, int nthreads, int tamanhoMascara, int deslPosMascara, int larguraImagem, int alturaImagem, Tools tools) {
 
         this.tid = tid;
         this.nthreads = nthreads;
@@ -20,10 +13,7 @@ public class Filtro extends Thread {
         this.deslPosMascara = deslPosMascara;
         this.larguraImagem = larguraImagem;
         this.alturaImagem = alturaImagem;
-        this.img = img;
-        this.imgCopy = imgCopy;
-        this.raster = img.getRaster();
-        this.wraster = imgCopy.getRaster();
+        this.tools = tools;
     }
 
     private void debug_delay() {
@@ -124,13 +114,9 @@ public class Filtro extends Thread {
                 // Processamento para pixel atual
                 while(true) {
 
-                    //System.out.printf("%d %d ", j, i);
-                    
-                    vetmascaraRedInt[posVetMascaraRed] = raster.getSample(j,i,0);
-                    //System.out.printf("vetmascaraRedInt[%d] = %d\n", posVetMascaraRed, vetmascaraRedInt[posVetMascaraRed]);
-                    vetmascaraGreenInt[posVetMascaraGreen] = raster.getSample(j,i,1);
-                    vetmascaraBlueInt[posVetMascaraBlue] = raster.getSample(j,i,2);
-
+                    vetmascaraRedInt[posVetMascaraRed] = this.tools.get_red_entrada(j,i);
+                    vetmascaraGreenInt[posVetMascaraGreen] = this.tools.get_green_entrada(j,i);
+                    vetmascaraBlueInt[posVetMascaraBlue] = this.tools.get_blue_entrada(j,i);
     
                     medianRed = 0;
                     medianGreen = 0;
@@ -190,10 +176,9 @@ public class Filtro extends Thread {
 
                         medianBlue = median(mascaraVet, tamanhoMascara);
                         
-                        //System.out.printf("Median Red: %d\n\n", medianRed);
-                        wraster.setSample(posX, posY, 0, medianRed);
-                        wraster.setSample(posX, posY, 1, medianGreen);
-                        wraster.setSample(posX, posY, 2, medianBlue);
+                        this.tools.set_red_saida(posX, posY, medianRed);
+                        this.tools.set_green_saida(posX, posY, medianGreen);
+                        this.tools.set_blue_saida(posX, posY, medianBlue);
 
                         posVetMascaraRed = 0;
                         posVetMascaraGreen = 0;

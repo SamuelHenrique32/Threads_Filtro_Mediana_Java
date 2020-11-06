@@ -1,4 +1,6 @@
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -7,7 +9,7 @@ public class Main {
 
 	private static final int kQUANT_PARAMETROS = 2;
 
-	private static final String kNOME_ARQUIVO_ENTRADA = "borboleta.bmp";
+	private static final String kNOME_ARQUIVO_ENTRADA = "heavy.bmp";
 
 	private static final String kNOME_ARQUIVO_SAIDA = "out.bmp";
 
@@ -18,6 +20,9 @@ public class Main {
 		File file = new File("../images/" + kNOME_ARQUIVO_SAIDA);
 		
 		BufferedImage img = null, imgCopy = null;
+
+		Tools tools;
+		Filtro[] filtro;
 
 		if(args.length != kQUANT_PARAMETROS ){
 
@@ -34,7 +39,7 @@ public class Main {
 		System.out.println("Tamanho da mascara: " + tamanhoMascara);
 		System.out.println("Numero de threads: " + nroThreads);
 
-		Filtro[] filtro = new Filtro[nroThreads];
+		filtro = new Filtro[nroThreads];
 
 		try {
 
@@ -51,9 +56,13 @@ public class Main {
 
 		imgCopy = img;
 
+		tools = new Tools(img.getWidth(), img.getHeight(), img, imgCopy);
+
+		tools.criar_matriz_entrada();
+
 		for(int i=0 ; i<nroThreads ; i++) {
 
-			filtro[i] = new Filtro(i, nroThreads, tamanhoMascara, deslPosMascara, img.getWidth(), img.getHeight(), img, imgCopy);
+			filtro[i] = new Filtro(i, nroThreads, tamanhoMascara, deslPosMascara, img.getWidth(), img.getHeight(), tools);
 			filtro[i].start();
 		}
 
@@ -66,7 +75,9 @@ public class Main {
 				e.printStackTrace();
 			}
 		}
-	
+
+		tools.criar_imagem_saida();
+
 		try {
 
 			ImageIO.write(imgCopy, "BMP", file);
